@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "accounts",
     "sites",
     "assets",
+    "dashboard",
     "health",
 ]
 

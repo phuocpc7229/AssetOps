@@ -72,6 +72,18 @@ const donutBackground = computed(() => {
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.donut-chart-card:hover {
+  border-color: rgba(0, 216, 255, 0.48);
+  box-shadow:
+    0 0 34px rgba(0, 184, 255, 0.24),
+    inset 0 0 42px rgba(18, 107, 255, 0.07);
+  transform: translateY(-1px);
 }
 
 .donut-chart-card header {
@@ -92,6 +104,12 @@ const donutBackground = computed(() => {
   color: var(--assetops-cyan);
   font-size: 12px;
   font-weight: 800;
+}
+
+.donut-chart-card a:hover,
+.donut-chart-card a:focus-visible {
+  color: #ffffff;
+  outline: 0;
 }
 
 .donut-chart-card__body {
@@ -178,6 +196,16 @@ const donutBackground = computed(() => {
 
   .donut-chart-card__legend {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donut-chart-card {
+    transition: none;
+  }
+
+  .donut-chart-card:hover {
+    transform: none;
   }
 }
 </style>

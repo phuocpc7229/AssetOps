@@ -109,6 +109,16 @@ const formatTime = (value: string) =>
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.recent-activity-panel:hover {
+  border-color: rgba(0, 216, 255, 0.44);
+  box-shadow:
+    0 0 32px rgba(0, 184, 255, 0.22),
+    inset 0 0 42px rgba(18, 107, 255, 0.07);
 }
 
 .recent-activity-panel header {
@@ -169,6 +179,19 @@ const formatTime = (value: string) =>
   border-radius: 8px;
   background: rgba(7, 21, 40, 0.62);
   padding: 10px;
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.recent-activity-panel__item:not(.recent-activity-panel__item--static):hover,
+.recent-activity-panel__item:not(.recent-activity-panel__item--static):focus-visible {
+  background: rgba(10, 132, 255, 0.12);
+  box-shadow: 0 0 16px rgba(0, 132, 255, 0.14);
+  outline: 0;
+  transform: translateY(-1px);
 }
 
 .recent-activity-panel__item--static {
@@ -227,5 +250,17 @@ const formatTime = (value: string) =>
   color: var(--assetops-muted);
   font-size: 13px;
   font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-activity-panel,
+  .recent-activity-panel__item {
+    transition: none;
+  }
+
+  .recent-activity-panel__item:not(.recent-activity-panel__item--static):hover,
+  .recent-activity-panel__item:not(.recent-activity-panel__item--static):focus-visible {
+    transform: none;
+  }
 }
 </style>

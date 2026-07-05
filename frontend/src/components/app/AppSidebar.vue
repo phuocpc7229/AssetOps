@@ -147,10 +147,20 @@ const comingSoonItems = [
   font-size: 14px;
   font-weight: 600;
   transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    box-shadow 160ms ease,
-    color 160ms ease;
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.app-sidebar__item:not(.app-sidebar__item--disabled):hover,
+.app-sidebar__item:not(.app-sidebar__item--disabled):focus-visible {
+  border-color: rgba(0, 216, 255, 0.42);
+  color: #ffffff;
+  background: rgba(10, 132, 255, 0.14);
+  outline: 0;
+  transform: translateX(2px);
 }
 
 .app-sidebar__item.router-link-active {
@@ -203,6 +213,17 @@ const comingSoonItems = [
 .app-sidebar__version span {
   color: var(--assetops-muted);
   font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar__item {
+    transition: none;
+  }
+
+  .app-sidebar__item:not(.app-sidebar__item--disabled):hover,
+  .app-sidebar__item:not(.app-sidebar__item--disabled):focus-visible {
+    transform: none;
+  }
 }
 
 @media (max-width: 900px) {

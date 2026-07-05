@@ -147,35 +147,37 @@
       </footer>
     </div>
 
-    <div
-      v-if="assetPendingArchive"
-      class="assets-page__modal"
-      role="dialog"
-      aria-modal="true"
-    >
-      <section>
-        <h3>Archive Asset</h3>
-        <p>
-          Archive {{ assetPendingArchive.asset_tag }}? It will be hidden from the default list but can be shown with
-          archived assets included.
-        </p>
-        <div>
-          <button
-            type="button"
-            @click="assetPendingArchive = null"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            :disabled="isArchiving"
-            @click="confirmArchive"
-          >
-            {{ isArchiving ? 'Archiving...' : 'Archive' }}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Transition name="assetops-modal">
+      <div
+        v-if="assetPendingArchive"
+        class="assets-page__modal"
+        role="dialog"
+        aria-modal="true"
+      >
+        <section>
+          <h3>Archive Asset</h3>
+          <p>
+            Archive {{ assetPendingArchive.asset_tag }}? It will be hidden from the default list but can be shown with
+            archived assets included.
+          </p>
+          <div>
+            <button
+              type="button"
+              @click="assetPendingArchive = null"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              :disabled="isArchiving"
+              @click="confirmArchive"
+            >
+              {{ isArchiving ? 'Archiving...' : 'Archive' }}
+            </button>
+          </div>
+        </section>
+      </div>
+    </Transition>
   </section>
 </template>
 
@@ -424,6 +426,13 @@ watch(
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.assets-page__panel:hover {
+  border-color: rgba(0, 216, 255, 0.42);
 }
 
 .assets-page__header,
@@ -511,6 +520,11 @@ watch(
   outline: 0;
 }
 
+.assets-page__filters input:focus {
+  border-color: var(--assetops-cyan);
+  box-shadow: 0 0 16px rgba(0, 216, 255, 0.18);
+}
+
 .assets-page__checkbox {
   display: flex !important;
   align-items: center;
@@ -548,6 +562,15 @@ watch(
 .assets-page__modal button:disabled {
   cursor: not-allowed;
   opacity: 0.54;
+}
+
+.assets-page a:hover,
+.assets-page a:focus-visible,
+.assets-page button:not(:disabled):hover,
+.assets-page button:not(:disabled):focus-visible {
+  border-color: var(--assetops-cyan);
+  box-shadow: 0 0 18px rgba(0, 132, 255, 0.18);
+  outline: 0;
 }
 
 .assets-page__state {
@@ -605,6 +628,12 @@ watch(
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .assets-page__panel {
+    transition: none;
+  }
 }
 
 @media (max-width: 1200px) {

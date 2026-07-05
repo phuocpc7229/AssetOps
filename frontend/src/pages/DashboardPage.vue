@@ -170,6 +170,13 @@ onMounted(() => {
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.dashboard-page__header:hover {
+  border-color: rgba(0, 216, 255, 0.42);
 }
 
 .dashboard-page__header p {
@@ -248,6 +255,19 @@ onMounted(() => {
   cursor: pointer;
   font-weight: 800;
   box-shadow: 0 0 18px rgba(0, 132, 255, 0.24);
+}
+
+.dashboard-page__search button:hover,
+.dashboard-page__search button:focus-visible {
+  border-color: var(--assetops-cyan);
+  box-shadow: 0 0 24px rgba(0, 132, 255, 0.28);
+  outline: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page__header {
+    transition: none;
+  }
 }
 
 @media (max-width: 1100px) {

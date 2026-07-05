@@ -160,6 +160,20 @@ const actions = computed<QuickAction[]>(() => [
   background: rgba(7, 21, 40, 0.72);
   padding: 12px 12px 12px 46px;
   text-align: left;
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.quick-actions-panel__action:not(.quick-actions-panel__action--disabled):hover,
+.quick-actions-panel__action:not(.quick-actions-panel__action--disabled):focus-visible {
+  border-color: rgba(0, 216, 255, 0.52);
+  background: rgba(10, 132, 255, 0.15);
+  box-shadow: 0 0 18px rgba(0, 132, 255, 0.18);
+  outline: 0;
+  transform: translateY(-1px);
 }
 
 .quick-actions-panel__action span {
@@ -204,5 +218,16 @@ const actions = computed<QuickAction[]>(() => [
 .quick-actions-panel__action--disabled {
   cursor: not-allowed;
   opacity: 0.58;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quick-actions-panel__action {
+    transition: none;
+  }
+
+  .quick-actions-panel__action:not(.quick-actions-panel__action--disabled):hover,
+  .quick-actions-panel__action:not(.quick-actions-panel__action--disabled):focus-visible {
+    transform: none;
+  }
 }
 </style>

@@ -95,54 +95,56 @@
       </footer>
     </div>
 
-    <div
-      v-if="isFormOpen"
-      class="master-data-page__modal"
-      role="dialog"
-      aria-modal="true"
-    >
-      <form @submit.prevent="saveRecord">
-        <h3>{{ editingRecord ? `Edit ${config.singular}` : `Add ${config.singular}` }}</h3>
-        <label v-if="editingRecord">
-          <span>Code</span>
-          <input
-            v-model.trim="form.code"
-            readonly
-          >
-        </label>
-        <label>
-          <span>Name</span>
-          <input
-            v-model.trim="form.name"
-            required
-          >
-        </label>
-        <label>
-          <span>Description</span>
-          <textarea
-            v-model.trim="form.description"
-            rows="4"
-          />
-        </label>
-        <p v-if="formError">
-          {{ formError }}
-        </p>
-        <div>
-          <button
-            type="button"
-            @click="closeForm"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            :disabled="isSaving"
-          >
-            {{ isSaving ? 'Saving...' : `Save ${config.singular}` }}
-          </button>
-        </div>
-      </form>
-    </div>
+    <Transition name="assetops-modal">
+      <div
+        v-if="isFormOpen"
+        class="master-data-page__modal"
+        role="dialog"
+        aria-modal="true"
+      >
+        <form @submit.prevent="saveRecord">
+          <h3>{{ editingRecord ? `Edit ${config.singular}` : `Add ${config.singular}` }}</h3>
+          <label v-if="editingRecord">
+            <span>Code</span>
+            <input
+              v-model.trim="form.code"
+              readonly
+            >
+          </label>
+          <label>
+            <span>Name</span>
+            <input
+              v-model.trim="form.name"
+              required
+            >
+          </label>
+          <label>
+            <span>Description</span>
+            <textarea
+              v-model.trim="form.description"
+              rows="4"
+            />
+          </label>
+          <p v-if="formError">
+            {{ formError }}
+          </p>
+          <div>
+            <button
+              type="button"
+              @click="closeForm"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              :disabled="isSaving"
+            >
+              {{ isSaving ? 'Saving...' : `Save ${config.singular}` }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Transition>
   </section>
 </template>
 
@@ -324,6 +326,13 @@ onMounted(loadRecords)
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.master-data-page__panel:hover {
+  border-color: rgba(0, 216, 255, 0.42);
 }
 
 .master-data-page__header,
@@ -395,6 +404,12 @@ onMounted(loadRecords)
   outline: 0;
 }
 
+.master-data-page input:focus,
+.master-data-page textarea:focus {
+  border-color: var(--assetops-cyan);
+  box-shadow: 0 0 16px rgba(0, 216, 255, 0.18);
+}
+
 .master-data-page__table {
   width: 100%;
   border-collapse: collapse;
@@ -419,6 +434,17 @@ onMounted(loadRecords)
   font-size: 14px;
 }
 
+.master-data-page__table tbody tr {
+  transition:
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.master-data-page__table tbody tr:hover {
+  background: rgba(10, 132, 255, 0.07);
+  box-shadow: inset 2px 0 0 rgba(0, 216, 255, 0.52);
+}
+
 .master-data-page__actions {
   display: flex;
   gap: 10px;
@@ -433,6 +459,13 @@ onMounted(loadRecords)
   padding: 9px 12px;
   cursor: pointer;
   font-weight: 700;
+}
+
+.master-data-page button:not(:disabled):hover,
+.master-data-page button:not(:disabled):focus-visible {
+  border-color: var(--assetops-cyan);
+  box-shadow: 0 0 18px rgba(0, 132, 255, 0.18);
+  outline: 0;
 }
 
 .master-data-page__state {
@@ -477,6 +510,13 @@ onMounted(loadRecords)
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .master-data-page__panel,
+  .master-data-page__table tbody tr {
+    transition: none;
+  }
 }
 
 @media (max-width: 720px) {

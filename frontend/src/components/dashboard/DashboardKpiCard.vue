@@ -53,6 +53,18 @@ const formattedValue = computed(() => new Intl.NumberFormat('en-US').format(prop
   box-shadow:
     0 0 24px rgba(0, 132, 255, 0.14),
     inset 0 0 36px rgba(18, 107, 255, 0.05);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.dashboard-kpi-card:hover {
+  border-color: rgba(0, 216, 255, 0.52);
+  box-shadow:
+    0 0 30px rgba(0, 132, 255, 0.2),
+    inset 0 0 36px rgba(18, 107, 255, 0.07);
+  transform: translateY(-2px);
 }
 
 .dashboard-kpi-card__top {
@@ -108,5 +120,15 @@ const formattedValue = computed(() => new Intl.NumberFormat('en-US').format(prop
 
 .dashboard-kpi-card--muted {
   color: var(--assetops-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-kpi-card {
+    transition: none;
+  }
+
+  .dashboard-kpi-card:hover {
+    transform: none;
+  }
 }
 </style>

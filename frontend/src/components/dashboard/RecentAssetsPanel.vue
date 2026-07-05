@@ -52,6 +52,16 @@ defineProps<{
   box-shadow:
     var(--assetops-glow),
     inset 0 0 42px rgba(18, 107, 255, 0.06);
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.recent-assets-panel:hover {
+  border-color: rgba(0, 216, 255, 0.44);
+  box-shadow:
+    0 0 32px rgba(0, 184, 255, 0.22),
+    inset 0 0 42px rgba(18, 107, 255, 0.07);
 }
 
 .recent-assets-panel header,
@@ -95,6 +105,13 @@ defineProps<{
   font-weight: 800;
 }
 
+.recent-assets-panel a:hover,
+.recent-assets-panel a:focus-visible {
+  border-color: var(--assetops-cyan);
+  background: rgba(10, 132, 255, 0.16);
+  outline: 0;
+}
+
 .recent-assets-panel footer span,
 .recent-assets-panel__empty {
   color: var(--assetops-muted);
@@ -106,5 +123,11 @@ defineProps<{
   display: grid;
   min-height: 220px;
   place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-assets-panel {
+    transition: none;
+  }
 }
 </style>

@@ -83,8 +83,8 @@ withDefaults(
   padding: 0 18px;
   box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.18);
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease;
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
 }
 
 .asset-text-field__control:focus-within {
@@ -132,5 +132,11 @@ withDefaults(
 
 .asset-text-field__action:hover {
   color: var(--assetops-cyan);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-text-field__control {
+    transition: none;
+  }
 }
 </style>

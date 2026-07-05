@@ -109,9 +109,26 @@ const formatDate = (value: string | null) => {
   font-size: 14px;
 }
 
+.dashboard-asset-table tbody tr {
+  transition:
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.dashboard-asset-table tbody tr:hover {
+  background: rgba(10, 132, 255, 0.07);
+  box-shadow: inset 2px 0 0 rgba(0, 216, 255, 0.52);
+}
+
 .dashboard-asset-table a {
   color: var(--assetops-cyan);
   font-weight: 800;
+}
+
+.dashboard-asset-table a:hover,
+.dashboard-asset-table a:focus-visible {
+  color: #ffffff;
+  outline: 0;
 }
 
 .dashboard-asset-table small {
@@ -144,5 +161,11 @@ const formatDate = (value: string | null) => {
 
 .dashboard-asset-table__warranty--unknown {
   color: var(--assetops-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-asset-table tbody tr {
+    transition: none;
+  }
 }
 </style>

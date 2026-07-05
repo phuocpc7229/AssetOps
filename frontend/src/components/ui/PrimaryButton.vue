@@ -40,9 +40,9 @@ withDefaults(
   font-weight: 600;
   line-height: 1;
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
 }
 
 .primary-button:disabled {
@@ -69,7 +69,7 @@ withDefaults(
   inset: 0;
   background: linear-gradient(100deg, transparent 22%, rgba(255, 255, 255, 0.22) 50%, transparent 78%);
   opacity: 0;
-  transition: opacity 160ms ease;
+  transition: opacity var(--assetops-motion-fast) var(--assetops-ease-standard);
 }
 
 .primary-button:hover {
@@ -89,5 +89,16 @@ withDefaults(
 .primary-button:focus-visible {
   outline: 2px solid var(--assetops-cyan);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary-button,
+  .primary-button::after {
+    transition: none;
+  }
+
+  .primary-button:hover {
+    transform: none;
+  }
 }
 </style>

@@ -30,40 +30,42 @@
       </button>
     </div>
 
-    <div
-      v-if="isOpen"
-      class="searchable-select__menu"
-    >
-      <input
-        ref="searchInput"
-        v-model.trim="search"
-        class="searchable-select__search"
-        :placeholder="searchPlaceholder"
-        @keydown.down.prevent="moveActive(1)"
-        @keydown.up.prevent="moveActive(-1)"
-        @keydown.enter.prevent="selectActiveOption"
-        @keydown.esc.prevent="close"
+    <Transition name="assetops-dropdown">
+      <div
+        v-if="isOpen"
+        class="searchable-select__menu"
       >
-      <div class="searchable-select__list">
-        <button
-          v-for="(option, index) in filteredOptions"
-          :key="option.id"
-          type="button"
-          class="searchable-select__option"
-          :class="{ 'searchable-select__option--active': index === activeIndex }"
-          @click="selectOption(option.id)"
+        <input
+          ref="searchInput"
+          v-model.trim="search"
+          class="searchable-select__search"
+          :placeholder="searchPlaceholder"
+          @keydown.down.prevent="moveActive(1)"
+          @keydown.up.prevent="moveActive(-1)"
+          @keydown.enter.prevent="selectActiveOption"
+          @keydown.esc.prevent="close"
         >
-          <strong>{{ option.label }}</strong>
-          <span v-if="option.detail">{{ option.detail }}</span>
-        </button>
-        <p
-          v-if="filteredOptions.length === 0"
-          class="searchable-select__empty"
-        >
-          No matching records.
-        </p>
+        <div class="searchable-select__list">
+          <button
+            v-for="(option, index) in filteredOptions"
+            :key="option.id"
+            type="button"
+            class="searchable-select__option"
+            :class="{ 'searchable-select__option--active': index === activeIndex }"
+            @click="selectOption(option.id)"
+          >
+            <strong>{{ option.label }}</strong>
+            <span v-if="option.detail">{{ option.detail }}</span>
+          </button>
+          <p
+            v-if="filteredOptions.length === 0"
+            class="searchable-select__empty"
+          >
+            No matching records.
+          </p>
+        </div>
       </div>
-    </div>
+    </Transition>
 
     <small v-if="error">{{ error }}</small>
   </div>
@@ -210,6 +212,10 @@ onBeforeUnmount(() => {
   padding: 0 12px;
   text-align: left;
   cursor: pointer;
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    background var(--assetops-motion-standard) var(--assetops-ease-standard);
 }
 
 .searchable-select--open .searchable-select__control,
@@ -277,6 +283,9 @@ onBeforeUnmount(() => {
   padding: 10px;
   text-align: left;
   cursor: pointer;
+  transition:
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    color var(--assetops-motion-standard) var(--assetops-ease-standard);
 }
 
 .searchable-select__option:hover,
@@ -301,5 +310,12 @@ onBeforeUnmount(() => {
 .searchable-select__empty {
   margin: 0;
   padding: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .searchable-select__control,
+  .searchable-select__option {
+    transition: none;
+  }
 }
 </style>

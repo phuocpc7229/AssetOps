@@ -17,6 +17,10 @@
   --assetops-muted-strong: #afc2de;
   --assetops-glow: 0 0 28px rgba(0, 184, 255, 0.38);
   --assetops-strong-glow: 0 0 44px rgba(0, 132, 255, 0.56);
+  --assetops-motion-fast: 140ms;
+  --assetops-motion-standard: 180ms;
+  --assetops-motion-slow: 220ms;
+  --assetops-ease-standard: cubic-bezier(0.2, 0, 0, 1);
 }
 
 * {
@@ -45,6 +49,34 @@ input {
   font: inherit;
 }
 
+button,
+input,
+textarea,
+select,
+[role="button"] {
+  transition:
+    border-color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard),
+    color var(--assetops-motion-standard) var(--assetops-ease-standard),
+    opacity var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+button:not(:disabled):active,
+[role="button"]:active {
+  transform: translateY(1px);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--assetops-cyan);
+  outline-offset: 3px;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -57,4 +89,52 @@ a {
 .v-application {
   color: var(--assetops-text);
   background: var(--assetops-black);
+}
+
+.assetops-modal-enter-active,
+.assetops-modal-leave-active {
+  transition: opacity var(--assetops-motion-slow) var(--assetops-ease-standard);
+}
+
+.assetops-modal-enter-active > *,
+.assetops-modal-leave-active > * {
+  transition:
+    opacity var(--assetops-motion-slow) var(--assetops-ease-standard),
+    transform var(--assetops-motion-slow) var(--assetops-ease-standard);
+}
+
+.assetops-modal-enter-from,
+.assetops-modal-leave-to {
+  opacity: 0;
+}
+
+.assetops-modal-enter-from > *,
+.assetops-modal-leave-to > * {
+  opacity: 0;
+  transform: translateY(8px) scale(0.985);
+}
+
+.assetops-dropdown-enter-active,
+.assetops-dropdown-leave-active {
+  transform-origin: top center;
+  transition:
+    opacity var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.assetops-dropdown-enter-from,
+.assetops-dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-6px) scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

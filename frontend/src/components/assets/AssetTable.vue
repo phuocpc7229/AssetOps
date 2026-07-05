@@ -151,9 +151,28 @@ const isWarrantyExpired = (value: string | null) => {
   font-size: 14px;
 }
 
+.asset-table tbody tr {
+  transition:
+    background var(--assetops-motion-standard) var(--assetops-ease-standard),
+    box-shadow var(--assetops-motion-standard) var(--assetops-ease-standard);
+}
+
+.asset-table tbody tr:hover {
+  background: rgba(10, 132, 255, 0.07);
+  box-shadow: inset 2px 0 0 rgba(0, 216, 255, 0.52);
+}
+
 .asset-table a {
   color: var(--assetops-cyan);
   font-weight: 700;
+}
+
+.asset-table a:hover,
+.asset-table a:focus-visible,
+.asset-table__actions button:hover,
+.asset-table__actions button:focus-visible {
+  color: #ffffff;
+  outline: 0;
 }
 
 .asset-table__actions {
@@ -177,5 +196,11 @@ const isWarrantyExpired = (value: string | null) => {
 .asset-table__expired {
   color: #ff4d5e !important;
   font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-table tbody tr {
+    transition: none;
+  }
 }
 </style>

@@ -82,8 +82,8 @@ const transitionName = (routeName: RouteRecordNameGeneric | null | undefined) =>
 .route-form-enter-active,
 .route-form-leave-active {
   transition:
-    opacity 180ms ease,
-    transform 180ms ease;
+    opacity var(--assetops-motion-standard) var(--assetops-ease-standard),
+    transform var(--assetops-motion-standard) var(--assetops-ease-standard);
 }
 
 .route-dashboard-enter-from,

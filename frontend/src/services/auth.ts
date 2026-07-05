@@ -19,6 +19,16 @@ type MeResponse = {
   user: AuthUser
 }
 
+export type ChangePasswordPayload = {
+  current_password: string
+  new_password: string
+  confirm_password: string
+}
+
+type ChangePasswordResponse = {
+  detail: string
+}
+
 export const login = (username: string, password: string) =>
   apiRequest<LoginResponse>('/auth/login', {
     method: 'POST',
@@ -27,3 +37,13 @@ export const login = (username: string, password: string) =>
 
 export const fetchCurrentUser = (token: string) =>
   apiRequest<MeResponse>('/auth/me', { method: 'GET' }, { token })
+
+export const changePassword = (payload: ChangePasswordPayload, token: string) =>
+  apiRequest<ChangePasswordResponse>(
+    '/auth/change-password',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    { token },
+  )

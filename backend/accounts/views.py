@@ -3,8 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.models import AccessToken, AdminUser
-from accounts.security import create_access_token, hash_access_token, verify_password
-from accounts.serializers import LoginSerializer, SafeUserSerializer
+from accounts.security import create_access_token, hash_access_token, hash_password, verify_password
+from accounts.serializers import ChangePasswordSerializer, LoginSerializer, SafeUserSerializer
 
 
 class LoginView(APIView):
@@ -40,3 +40,14 @@ class LoginView(APIView):
 class MeView(APIView):
     def get(self, request):
         return Response({"user": SafeUserSerializer(request.user).data})
+
+
+class ChangePasswordView(APIView):
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={"user": request.user})
+        serializer.is_valid(raise_exception=True)
+
+        request.user.password_hash = hash_password(serializer.validated_data["new_password"])
+        request.user.save(update_fields=["password_hash", "updated_at"])
+
+        return Response({"detail": "Password changed successfully."})

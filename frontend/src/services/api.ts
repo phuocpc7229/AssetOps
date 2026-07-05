@@ -2,11 +2,13 @@ const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 export class ApiError extends Error {
   status: number
+  data: unknown
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, data: unknown = null) {
     super(message)
     this.name = 'ApiError'
     this.status = status
+    this.data = data
   }
 }
 
@@ -42,9 +44,8 @@ export const apiRequest = async <T>(
   const data = await response.json().catch(() => null)
 
   if (!response.ok) {
-    const message =
-      data && typeof data.detail === 'string' ? data.detail : 'Request failed. Please try again.'
-    throw new ApiError(message, response.status)
+    const message = data && typeof data.detail === 'string' ? data.detail : 'Request failed. Please try again.'
+    throw new ApiError(message, response.status, data)
   }
 
   return data as T

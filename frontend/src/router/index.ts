@@ -8,6 +8,38 @@ const routes: RouteRecordRaw[] = [
     redirect: { name: 'dashboard' },
   },
   {
+    path: '/assets',
+    redirect: { name: 'assets' },
+  },
+  {
+    path: '/assets/new',
+    redirect: { name: 'asset-new' },
+  },
+  {
+    path: '/assets/:id/edit',
+    redirect: (to) => ({ name: 'asset-edit', params: to.params }),
+  },
+  {
+    path: '/sites',
+    redirect: { name: 'sites' },
+  },
+  {
+    path: '/asset-types',
+    redirect: { name: 'master-data', params: { kind: 'asset-types' } },
+  },
+  {
+    path: '/vendors',
+    redirect: { name: 'master-data', params: { kind: 'vendors' } },
+  },
+  {
+    path: '/device-types',
+    redirect: { name: 'master-data', params: { kind: 'device-types' } },
+  },
+  {
+    path: '/locations',
+    redirect: { name: 'master-data', params: { kind: 'locations' } },
+  },
+  {
     path: '/login',
     name: 'login',
     component: () => import('@/pages/LoginPage.vue'),
@@ -16,13 +48,61 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: () => import('@/pages/DashboardPage.vue'),
+    path: '/',
+    component: () => import('@/layouts/AppShell.vue'),
     meta: {
-      title: 'Dashboard',
       requiresAuth: true,
     },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: () => import('@/pages/DashboardPage.vue'),
+        meta: {
+          title: 'Dashboard',
+        },
+      },
+      {
+        path: 'dashboard/assets',
+        name: 'assets',
+        component: () => import('@/pages/AssetsPage.vue'),
+        meta: {
+          title: 'Assets',
+        },
+      },
+      {
+        path: 'dashboard/assets/new',
+        name: 'asset-new',
+        component: () => import('@/pages/AssetFormPage.vue'),
+        meta: {
+          title: 'Add Asset',
+        },
+      },
+      {
+        path: 'dashboard/assets/:id/edit',
+        name: 'asset-edit',
+        component: () => import('@/pages/AssetFormPage.vue'),
+        meta: {
+          title: 'Edit Asset',
+        },
+      },
+      {
+        path: 'dashboard/sites',
+        name: 'sites',
+        component: () => import('@/pages/SitesPage.vue'),
+        meta: {
+          title: 'Sites',
+        },
+      },
+      {
+        path: 'dashboard/master-data/:kind(asset-types|vendors|device-types|locations)',
+        name: 'master-data',
+        component: () => import('@/pages/MasterDataPage.vue'),
+        meta: {
+          title: 'Master Data',
+        },
+      },
+    ],
   },
 ]
 

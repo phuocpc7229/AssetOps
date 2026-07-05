@@ -1,45 +1,89 @@
 # Current State
 
-## Completed
+## Project Status
 
-- Added a Django REST Framework backend foundation under `backend/`.
-- Added environment-driven backend settings and PostgreSQL database configuration.
-- Added database migrations for administrator users and access tokens.
-- Added `GET /api/v1/health`.
-- Added secure password hashing through Django password hashers.
-- Added idempotent initial administrator creation through `create_initial_admin`.
-- Added `POST /api/v1/auth/login`.
-- Added protected `GET /api/v1/auth/me`.
-- Added backend API tests for health and authentication behavior.
-- Connected the existing approved login page to the authentication API.
-- Added Pinia authentication state and token storage.
-- Added required-field validation, loading state, duplicate-submit prevention, and inline API errors to the login flow.
-- Added protected `/dashboard` routing and a minimal dashboard placeholder.
-- Added environment variable examples for backend and frontend.
-- Added Asset Management as the first core module.
-- Added the `assets` backend app with an `Asset` model, migration, validation, search, filters, ordering, pagination, and soft archive behavior.
-- Added protected asset API endpoints for list, create, detail, update, and archive.
-- Added backend tests for asset authentication, validation, duplicate prevention, list behavior, search, filtering, pagination, ordering, updates, and soft archive.
-- Added the authenticated app shell, sidebar, and topbar.
-- Added asset list, add, and edit frontend pages.
-- Added asset search, filters, pagination, loading, empty, error, and archive confirmation states.
-- Added Sites management with protected backend CRUD APIs and a functional authenticated Sites page.
-- Updated assets to reference managed Sites through a nullable foreign key instead of free-text site values.
-- Added an authenticated asset ping test endpoint and frontend Ping action for assets with IP addresses.
-- Added Milestone 2.5 enterprise master data foundation for Asset Types, Vendors, Device Types, and Locations.
-- Converted assets to reference Asset Type, Vendor, and Location master data through foreign keys while keeping Site as a foreign key.
-- Added protected CRUD APIs for Asset Types, Vendors, Device Types, and Locations with search, pagination, validation, and soft delete.
-- Added backend tests for all master-data CRUD, search, pagination, validation, and soft-delete behavior.
-- Updated the Asset form so Asset Type, Vendor, and Location use searchable API-backed dropdown controls.
-- Added authenticated master-data management pages and removed Coming Soon labels for implemented master-data modules in the sidebar.
+AssetOps Portal has a working Django REST Framework backend and Vue 3/Vuetify frontend foundation. Authentication, the authenticated app shell, Asset Management, Site Management, master-data management, asset ping testing, and multi-IP asset support are implemented.
+
+The dashboard remains intentionally minimal until operational metrics are implemented. Sidebar modules outside Dashboard, Assets, Sites, Asset Types, Vendors, Device Types, and Locations remain marked as Coming Soon.
+
+## Completed Features
+
+- Backend foundation under `backend/` with environment-driven settings and PostgreSQL configuration.
+- Docker Compose PostgreSQL database service.
+- Custom administrator model, hashed passwords, hashed bearer access tokens, and idempotent initial administrator creation.
+- `GET /api/v1/health`.
+- `POST /api/v1/auth/login` and protected `GET /api/v1/auth/me`.
+- Authenticated Vue app shell with sidebar, topbar, protected routing, Pinia auth state, and token storage.
+- Approved dark AssetOps login page connected to the authentication API.
+- Asset Management with protected list, create, detail, update, archive, search, filters, ordering, and pagination.
+- Site Management with protected CRUD APIs, frontend management page, search, validation, and soft delete.
+- Master-data management for Asset Types, Vendors, Device Types, and Locations with protected CRUD APIs, search, pagination, validation, soft delete, and frontend pages.
+- Asset records reference managed Site, Asset Type, Vendor, and Location records.
+- Multiple IP addresses per asset with one primary IP, duplicate prevention, primary-IP synchronization, and legacy `ip_address` compatibility.
+- Asset ping endpoint and frontend Ping action, including selecting a stored asset IP when multiple IP addresses exist.
+- API-backed searchable dropdown controls for asset forms and filters.
+- Frontend date display/input normalization for asset date fields.
+- `seed_master_data` management command for default Asset Types, Vendors, Device Types, and Locations.
+- Backend tests for health, authentication, assets, sites, master data, soft delete, validation, pagination, search, ordering, ping behavior, multi-IP behavior, and master-data seeding.
+
+## Database Schema
+
+- `admin_users`: administrator credentials and status fields.
+- `access_tokens`: hashed bearer tokens linked to administrator users.
+- `sites`: managed sites with soft-delete fields.
+- `asset_types`, `vendors`, `device_types`, `locations`: reusable master-data tables with soft-delete fields.
+- `assets`: core asset records with foreign keys to Site, Asset Type, Vendor, and Location; archived assets use `status=archived`.
+- `asset_ip_addresses`: related IP addresses for assets, with `is_primary` and a uniqueness constraint on asset/address.
+
+Existing `assets.ip_address` remains as the primary IP compatibility field and is synchronized from `asset_ip_addresses`.
+
+## API Surface
+
+- `GET /api/v1/health`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
+- `GET|POST /api/v1/assets`
+- `GET|PATCH|DELETE /api/v1/assets/<id>`
+- `POST /api/v1/assets/<id>/ping`
+- `GET|POST /api/v1/sites`
+- `GET|PATCH|DELETE /api/v1/sites/<id>`
+- `GET|POST /api/v1/asset-types`
+- `GET|PATCH|DELETE /api/v1/asset-types/<id>`
+- `GET|POST /api/v1/vendors`
+- `GET|PATCH|DELETE /api/v1/vendors/<id>`
+- `GET|POST /api/v1/device-types`
+- `GET|PATCH|DELETE /api/v1/device-types/<id>`
+- `GET|POST /api/v1/locations`
+- `GET|PATCH|DELETE /api/v1/locations/<id>`
+
+Asset create/update accepts `site_id`, `asset_type_id`, `vendor_id`, `location_id`, and `ip_addresses`. Asset responses return nested Site, master-data, and IP-address summaries.
+
+## Frontend State
+
+- Frontend is a Vue 3 TypeScript Vite app using Vuetify 3.
+- API access is isolated in typed service modules under `frontend/src/services`.
+- Authentication state is managed in Pinia and persisted through local storage.
+- Implemented pages: Login, Dashboard placeholder, Assets, Add/Edit Asset, Sites, and Master Data.
+- Reusable UI patterns include the app shell, logo, neon panel, primary button, Asset text field, Asset table/status pill, and searchable select.
+- The approved dark futuristic AssetOps design in `ImageUI` and `docs/UI_REFERENCE.md` remains the visual baseline.
 
 ## Notes
 
-- The approved login visual design remains the baseline and should not be redesigned.
-- The dashboard placeholder remains intentionally minimal until dashboard metrics are implemented.
-- Sidebar entries outside Dashboard, Assets, Sites, Asset Types, Vendors, Device Types, and Locations are marked as Coming Soon.
-- Asset archive is soft delete through `status=archived`; archived assets are excluded from the default list unless explicitly included.
-- Master-data delete actions are soft deletes through `is_deleted=true`; deleted records are excluded from default master-data lists unless explicitly included.
-- Sites and Milestone 2.5 master data are functional sidebar modules. Other non-implemented modules remain marked as Coming Soon.
-- Asset site values are managed through `site_id` on create/update and returned as a site summary object in API responses.
-- Asset type, vendor, and location values are managed through `asset_type_id`, `vendor_id`, and `location_id` on create/update and returned as nested master-data objects in API responses.
+- Asset archive is soft delete through `status=archived`; archived assets are excluded from the default asset list unless explicitly included.
+- Site and master-data delete actions are soft deletes through `is_deleted=true`; deleted records are excluded from default lists unless explicitly included.
+- Site is required for asset create/update.
+- Asset Type is required for asset create/update.
+- Deleted Sites and deleted master-data records cannot be selected for new asset writes.
+- Other non-implemented sidebar modules remain Coming Soon.
+
+## Remaining Known Issues
+
+- Dashboard metrics and operational widgets are not implemented yet.
+- Import, Reports, Users, and Settings modules are placeholders.
+- Docker Compose currently defines the database service only; backend and frontend are run separately in local development.
+- Frontend automated tests are not yet configured.
+- Some frontend flows still use native browser dialogs for simple confirmation or IP selection.
+
+## Recommended Next Milestone
+
+Implement the operational Dashboard milestone: backend aggregate metrics plus frontend KPI cards, recent assets, warranty/maintenance indicators, and compact charts using the approved admin dashboard mockup.

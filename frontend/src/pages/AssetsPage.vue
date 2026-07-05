@@ -181,7 +181,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 import AssetTable from '@/components/assets/AssetTable.vue'
 import SearchableSelect from '@/components/ui/SearchableSelect.vue'
@@ -197,6 +197,7 @@ import {
 import { fetchSites, type Site } from '@/services/sites'
 
 const authStore = useAuthStore()
+const route = useRoute()
 
 const assets = ref<Asset[]>([])
 const isLoading = ref(false)
@@ -218,10 +219,29 @@ const emptyFilters = () => ({
   include_archived: false,
 })
 
-const draftFilters = reactive(emptyFilters())
+const readQueryString = (value: unknown) => (typeof value === 'string' ? value : '')
+const readNullableQueryString = (value: unknown) => {
+  const queryValue = readQueryString(value)
+  return queryValue || null
+}
+const readQueryNumber = (value: unknown) => {
+  const queryValue = readQueryString(value)
+  return queryValue && !Number.isNaN(Number(queryValue)) ? Number(queryValue) : null
+}
+const initialFilters = () => ({
+  search: readQueryString(route.query.search),
+  status: readNullableQueryString(route.query.status),
+  criticality: readNullableQueryString(route.query.criticality),
+  asset_type: readQueryString(route.query.asset_type),
+  vendor: readQueryString(route.query.vendor),
+  site: readQueryNumber(route.query.site),
+  include_archived: route.query.include_archived === 'true',
+})
+
+const draftFilters = reactive(initialFilters())
 const params = reactive<AssetListParams>({
-  ...emptyFilters(),
-  ordering: 'asset_tag',
+  ...initialFilters(),
+  ordering: readQueryString(route.query.ordering) || 'asset_tag',
   page: 1,
   page_size: 10,
 })

@@ -28,23 +28,24 @@
 
         <label>
           <span>Status</span>
-          <select v-model="draftFilters.status">
-            <option value="">Default Active View</option>
-            <option value="active">Active</option>
-            <option value="in_maintenance">In Maintenance</option>
-            <option value="archived">Archived</option>
-          </select>
+          <SearchableSelect
+            v-model="draftFilters.status"
+            :options="statusFilterOptions"
+            placeholder="Default Active View"
+            search-placeholder="Search statuses"
+            clearable
+          />
         </label>
 
         <label>
           <span>Criticality</span>
-          <select v-model="draftFilters.criticality">
-            <option value="">All</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-            <option value="critical">Critical</option>
-          </select>
+          <SearchableSelect
+            v-model="draftFilters.criticality"
+            :options="criticalityFilterOptions"
+            placeholder="All"
+            search-placeholder="Search criticality"
+            clearable
+          />
         </label>
 
         <label>
@@ -59,16 +60,13 @@
 
         <label>
           <span>Site</span>
-          <select v-model="draftFilters.site">
-            <option value="">All</option>
-            <option
-              v-for="site in sites"
-              :key="site.id"
-              :value="site.id"
-            >
-              {{ site.code }} - {{ site.name }}
-            </option>
-          </select>
+          <SearchableSelect
+            v-model="draftFilters.site"
+            :options="siteFilterOptions"
+            placeholder="All"
+            search-placeholder="Search sites"
+            clearable
+          />
         </label>
 
         <label class="assets-page__checkbox">
@@ -186,6 +184,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import AssetTable from '@/components/assets/AssetTable.vue'
+import SearchableSelect from '@/components/ui/SearchableSelect.vue'
 import { useAuthStore } from '@/stores/auth'
 import {
   archiveAsset,
@@ -211,11 +210,11 @@ const pingResult = ref<(AssetPingResponse & { assetTag: string }) | null>(null)
 
 const emptyFilters = () => ({
   search: '',
-  status: '',
-  criticality: '',
+  status: null as string | null,
+  criticality: null as string | null,
   asset_type: '',
   vendor: '',
-  site: '',
+  site: null as number | null,
   include_archived: false,
 })
 
@@ -236,6 +235,27 @@ const resultSummary = computed(() => {
   const end = Math.min(start + assets.value.length - 1, totalCount.value)
   return `${start}-${end} of ${totalCount.value} assets`
 })
+
+const statusFilterOptions = [
+  { id: 'active', label: 'Active' },
+  { id: 'in_maintenance', label: 'In Maintenance' },
+  { id: 'archived', label: 'Archived' },
+]
+
+const criticalityFilterOptions = [
+  { id: 'low', label: 'Low' },
+  { id: 'medium', label: 'Medium' },
+  { id: 'high', label: 'High' },
+  { id: 'critical', label: 'Critical' },
+]
+
+const siteFilterOptions = computed(() =>
+  sites.value.map((site) => ({
+    id: site.id,
+    label: site.name,
+    detail: site.code,
+  })),
+)
 
 const loadAssets = async () => {
   if (!authStore.accessToken) {
@@ -269,17 +289,27 @@ const runPingTest = async (asset: Asset) => {
     return
   }
 
+  const availableIpAddresses = asset.ip_addresses?.map((ipAddress) => ipAddress.address).filter(Boolean) ?? []
+  const selectedIpAddress =
+    availableIpAddresses.length > 1
+      ? globalThis.prompt(`Select IP to ping:\n${availableIpAddresses.join('\n')}`, asset.ip_address ?? availableIpAddresses[0])
+      : asset.ip_address
+
+  if (!selectedIpAddress) {
+    return
+  }
+
   error.value = null
   pingResult.value = {
     success: false,
     assetTag: asset.asset_tag,
-    ip_address: asset.ip_address ?? '',
+    ip_address: selectedIpAddress,
     latency_ms: null,
     message: 'Running ping test...',
   }
 
   try {
-    const response = await pingAsset(asset.id, authStore.accessToken)
+    const response = await pingAsset(asset.id, authStore.accessToken, selectedIpAddress)
     pingResult.value = {
       ...response,
       assetTag: asset.asset_tag,
@@ -429,8 +459,7 @@ onMounted(loadAssets)
   text-transform: uppercase;
 }
 
-.assets-page__filters input,
-.assets-page__filters select {
+.assets-page__filters input {
   min-height: 42px;
   border: 1px solid var(--assetops-border-muted);
   border-radius: 8px;

@@ -103,11 +103,11 @@
     >
       <form @submit.prevent="saveRecord">
         <h3>{{ editingRecord ? `Edit ${config.singular}` : `Add ${config.singular}` }}</h3>
-        <label>
+        <label v-if="editingRecord">
           <span>Code</span>
           <input
             v-model.trim="form.code"
-            required
+            readonly
           >
         </label>
         <label>
@@ -256,10 +256,16 @@ const saveRecord = async () => {
   formError.value = null
 
   try {
+    const payload: MasterDataPayload = {
+      name: form.name,
+      description: form.description,
+    }
+
     if (editingRecord.value) {
-      await updateMasterData(config.value.kind, editingRecord.value.id, form, authStore.accessToken)
+      payload.code = form.code
+      await updateMasterData(config.value.kind, editingRecord.value.id, payload, authStore.accessToken)
     } else {
-      await createMasterData(config.value.kind, form, authStore.accessToken)
+      await createMasterData(config.value.kind, payload, authStore.accessToken)
     }
 
     closeForm()

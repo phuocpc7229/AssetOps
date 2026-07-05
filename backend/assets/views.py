@@ -45,7 +45,9 @@ def should_include_archived(value: str | None) -> bool:
 
 class AssetListCreateView(APIView):
     def get(self, request):
-        queryset = Asset.objects.select_related("asset_type", "vendor", "site", "location").all()
+        queryset = Asset.objects.select_related("asset_type", "vendor", "site", "location").prefetch_related(
+            "ip_addresses"
+        )
 
         if not should_include_archived(request.query_params.get("include_archived")):
             queryset = queryset.exclude(status=Asset.Status.ARCHIVED)
@@ -58,6 +60,7 @@ class AssetListCreateView(APIView):
                 | Q(hostname__icontains=search)
                 | Q(serial_number__icontains=search)
                 | Q(ip_address__icontains=search)
+                | Q(ip_addresses__address__icontains=search)
                 | Q(asset_type__code__icontains=search)
                 | Q(asset_type__name__icontains=search)
                 | Q(vendor__code__icontains=search)
@@ -65,6 +68,7 @@ class AssetListCreateView(APIView):
                 | Q(location__code__icontains=search)
                 | Q(location__name__icontains=search)
             )
+            queryset = queryset.distinct()
 
         for filter_name in ["status", "criticality"]:
             value = request.query_params.get(filter_name, "").strip()
@@ -150,7 +154,12 @@ class AssetListCreateView(APIView):
 
 class AssetDetailView(APIView):
     def get_asset(self, asset_id):
-        return Asset.objects.select_related("asset_type", "vendor", "site", "location").filter(pk=asset_id).first()
+        return (
+            Asset.objects.select_related("asset_type", "vendor", "site", "location")
+            .prefetch_related("ip_addresses")
+            .filter(pk=asset_id)
+            .first()
+        )
 
     def get(self, request, asset_id):
         asset = self.get_asset(asset_id)
@@ -182,17 +191,24 @@ class AssetDetailView(APIView):
 
 class AssetPingView(APIView):
     def post(self, request, asset_id):
-        asset = Asset.objects.filter(pk=asset_id).first()
+        asset = Asset.objects.prefetch_related("ip_addresses").filter(pk=asset_id).first()
         if asset is None:
             return Response({"detail": "Asset not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        if not asset.ip_address:
+        ip_address = request.data.get("ip_address") or asset.ip_address
+        if ip_address and not asset.ip_addresses.filter(address=ip_address).exists() and ip_address != asset.ip_address:
+            return Response(
+                {"detail": "Selected IP address does not belong to this asset."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not ip_address:
             return Response(
                 {"detail": "Ping test requires an asset IP address."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        result = ping_ip_address(asset.ip_address)
+        result = ping_ip_address(ip_address)
         return Response(result)
 
 

@@ -156,3 +156,26 @@ class Asset(models.Model):
 
     def __str__(self) -> str:
         return f"{self.asset_tag} - {self.name}"
+
+
+class AssetIPAddress(models.Model):
+    asset = models.ForeignKey("assets.Asset", related_name="ip_addresses", on_delete=models.CASCADE)
+    address = models.GenericIPAddressField()
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "asset_ip_addresses"
+        constraints = [
+            models.UniqueConstraint(fields=["asset", "address"], name="asset_ip_addresses_asset_address_unique"),
+        ]
+        indexes = [
+            models.Index(fields=["asset"], name="asset_ip_addresses_asset_idx"),
+            models.Index(fields=["address"], name="asset_ip_addresses_address_idx"),
+            models.Index(fields=["is_primary"], name="asset_ip_addresses_primary_idx"),
+        ]
+        ordering = ["-is_primary", "address"]
+
+    def __str__(self) -> str:
+        return f"{self.asset.asset_tag} - {self.address}"

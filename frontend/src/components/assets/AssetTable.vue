@@ -6,6 +6,7 @@
           <th>Asset Tag</th>
           <th>Name</th>
           <th>Hostname</th>
+          <th>Primary IP</th>
           <th>Type</th>
           <th>Vendor</th>
           <th>Site</th>
@@ -27,6 +28,7 @@
           </td>
           <td>{{ asset.name }}</td>
           <td>{{ asset.hostname || '-' }}</td>
+          <td>{{ asset.ip_address || '-' }}</td>
           <td>{{ asset.asset_type.name }}</td>
           <td>{{ asset.vendor?.name || '-' }}</td>
           <td>{{ formatSite(asset) }}</td>

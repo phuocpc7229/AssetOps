@@ -123,12 +123,15 @@
     >
       <form @submit.prevent="saveSite">
         <h3>{{ editingSite ? 'Edit Site' : 'Add Site' }}</h3>
-        <label :class="{ 'sites-page__field--invalid': fieldErrors.code }">
+        <label
+          v-if="editingSite"
+          :class="{ 'sites-page__field--invalid': fieldErrors.code }"
+        >
           <span>Code</span>
           <input
             ref="codeInput"
             v-model.trim="form.code"
-            required
+            readonly
             :disabled="isSaving"
           >
           <small v-if="fieldErrors.code">{{ fieldErrors.code }}</small>
@@ -307,7 +310,7 @@ const startCreate = () => {
   formError.value = null
   clearFieldErrors()
   isFormOpen.value = true
-  void nextTick(() => codeInput.value?.focus())
+  void nextTick(() => nameInput.value?.focus())
 }
 
 const startEdit = (site: Site) => {
@@ -362,10 +365,17 @@ const saveSite = async () => {
 
   try {
     const wasEdit = Boolean(editingSite.value)
+    const payload: SitePayload = {
+      name: form.name,
+      address: form.address,
+      notes: form.notes,
+    }
+
     if (editingSite.value) {
-      await updateSite(editingSite.value.id, form, authStore.accessToken)
+      payload.code = form.code
+      await updateSite(editingSite.value.id, payload, authStore.accessToken)
     } else {
-      await createSite(form, authStore.accessToken)
+      await createSite(payload, authStore.accessToken)
     }
 
     closeForm()

@@ -13,7 +13,7 @@ export type Site = {
 }
 
 export type SitePayload = {
-  code: string
+  code?: string
   name: string
   address: string
   notes: string

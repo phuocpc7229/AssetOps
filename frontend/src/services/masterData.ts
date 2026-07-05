@@ -14,7 +14,7 @@ export type MasterDataRecord = {
 }
 
 export type MasterDataPayload = {
-  code: string
+  code?: string
   name: string
   description: string
 }

@@ -38,7 +38,6 @@ class SiteApiTests(TestCase):
         create_response = self.client.post(
             "/api/v1/sites",
             {
-                "code": "hq",
                 "name": "Headquarters",
                 "address": "100 Operations Way",
                 "notes": "Primary site",
@@ -47,12 +46,39 @@ class SiteApiTests(TestCase):
         )
 
         self.assertEqual(create_response.status_code, 201)
-        self.assertEqual(create_response.data["code"], "HQ")
+        self.assertEqual(create_response.data["code"], "HEADQUARTERS")
 
         list_response = self.client.get("/api/v1/sites?search=head&page_size=10")
         self.assertEqual(list_response.status_code, 200)
         self.assertEqual(list_response.data["count"], 1)
         self.assertEqual(list_response.data["results"][0]["name"], "Headquarters")
+
+    def test_create_generates_unique_site_code_suffix(self):
+        first_response = self.client.post(
+            "/api/v1/sites",
+            {"name": "Ho Chi Minh Head Office", "address": "1 Nguyen Hue"},
+            format="json",
+        )
+        second_response = self.client.post(
+            "/api/v1/sites",
+            {"name": "Ho Chi Minh Head Office", "address": "2 Nguyen Hue"},
+            format="json",
+        )
+
+        self.assertEqual(first_response.status_code, 201)
+        self.assertEqual(second_response.status_code, 201)
+        self.assertEqual(first_response.data["code"], "HCM-HQ")
+        self.assertEqual(second_response.data["code"], "HCM-HQ-02")
+
+    def test_create_generates_site_code_without_vietnamese_accents(self):
+        response = self.client.post(
+            "/api/v1/sites",
+            {"name": "Đà Nẵng Office", "address": "1 Bach Dang"},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["code"], "DN-BR01")
 
     def test_successful_edit_site(self):
         site = Site.objects.create(code="HQ", name="Headquarters", address="100 Operations Way")

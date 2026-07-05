@@ -4,6 +4,12 @@ import type { MasterDataRecord } from './masterData'
 export type AssetStatus = 'active' | 'in_maintenance' | 'archived'
 export type AssetCriticality = 'low' | 'medium' | 'high' | 'critical'
 
+export type AssetIPAddress = {
+  id?: number
+  address: string
+  is_primary: boolean
+}
+
 export type Asset = {
   id: number
   asset_tag: string
@@ -14,6 +20,7 @@ export type Asset = {
   model: string
   serial_number: string
   ip_address: string | null
+  ip_addresses: AssetIPAddress[]
   mac_address: string
   site: {
     id: number
@@ -42,6 +49,7 @@ export type AssetPayload = {
   model: string
   serial_number: string
   ip_address: string | null
+  ip_addresses: AssetIPAddress[]
   mac_address: string
   site_id: number | null
   location_id: number | null
@@ -125,5 +133,12 @@ export const updateAsset = (assetId: number, payload: AssetPayload, token: strin
 export const archiveAsset = (assetId: number, token: string) =>
   apiRequest<void>(`/assets/${assetId}`, { method: 'DELETE' }, { token })
 
-export const pingAsset = (assetId: number, token: string) =>
-  apiRequest<AssetPingResponse>(`/assets/${assetId}/ping`, { method: 'POST' }, { token })
+export const pingAsset = (assetId: number, token: string, ipAddress?: string) =>
+  apiRequest<AssetPingResponse>(
+    `/assets/${assetId}/ping`,
+    {
+      method: 'POST',
+      body: JSON.stringify(ipAddress ? { ip_address: ipAddress } : {}),
+    },
+    { token },
+  )

@@ -9,12 +9,20 @@
           <p>Please sign in to continue</p>
         </header>
 
-        <form class="login-page__form" aria-label="Sign in form">
+        <form
+          class="login-page__form"
+          aria-label="Sign in form"
+          novalidate
+          @submit.prevent="submitLogin"
+        >
           <AssetTextField
+            v-model="username"
             label="Username"
             name="username"
             placeholder="Enter your username"
             autocomplete="username"
+            :disabled="authStore.isLoading"
+            :invalid="Boolean(validationErrors.username)"
           >
             <template #icon>
               <svg viewBox="0 0 24 24" role="img">
@@ -25,12 +33,15 @@
           </AssetTextField>
 
           <AssetTextField
+            v-model="password"
             label="Password"
             name="password"
             :type="isPasswordVisible ? 'text' : 'password'"
             placeholder="Enter your password"
             autocomplete="current-password"
             :action-label="passwordVisibilityLabel"
+            :disabled="authStore.isLoading"
+            :invalid="Boolean(validationErrors.password)"
             @action-click="togglePasswordVisibility"
           >
             <template #icon>
@@ -67,7 +78,20 @@
             </template>
           </AssetTextField>
 
-          <PrimaryButton>Sign in</PrimaryButton>
+          <p
+            v-if="formError"
+            class="login-page__error"
+            role="alert"
+          >
+            {{ formError }}
+          </p>
+
+          <PrimaryButton
+            type="submit"
+            :disabled="authStore.isLoading"
+          >
+            {{ authStore.isLoading ? 'Signing in...' : 'Sign in' }}
+          </PrimaryButton>
         </form>
       </div>
     </NeonPanel>
@@ -75,22 +99,58 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import AssetOpsLogo from '@/components/ui/AssetOpsLogo.vue'
 import AssetTextField from '@/components/ui/AssetTextField.vue'
 import NeonPanel from '@/components/ui/NeonPanel.vue'
 import PrimaryButton from '@/components/ui/PrimaryButton.vue'
 import AuthLayout from '@/layouts/AuthLayout.vue'
+import { useAuthStore } from '@/stores/auth'
 
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 const isPasswordVisible = ref(false)
+const username = ref('')
+const password = ref('')
+const validationErrors = reactive({
+  username: '',
+  password: '',
+})
 
 const passwordVisibilityLabel = computed(() =>
   isPasswordVisible.value ? 'Hide password' : 'Show password',
 )
 
+const formError = computed(
+  () => validationErrors.username || validationErrors.password || authStore.error,
+)
+
 const togglePasswordVisibility = () => {
   isPasswordVisible.value = !isPasswordVisible.value
+}
+
+const validateForm = () => {
+  validationErrors.username = username.value.trim() ? '' : 'Username is required.'
+  validationErrors.password = password.value ? '' : 'Password is required.'
+
+  return !validationErrors.username && !validationErrors.password
+}
+
+const submitLogin = async () => {
+  if (authStore.isLoading || !validateForm()) {
+    return
+  }
+
+  try {
+    await authStore.signIn(username.value.trim(), password.value)
+    const redirectPath = typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard'
+    await router.push(redirectPath)
+  } catch {
+    password.value = ''
+  }
 }
 </script>
 
@@ -142,6 +202,14 @@ const togglePasswordVisibility = () => {
 
 .login-page__form .primary-button {
   margin-top: 16px;
+}
+
+.login-page__error {
+  margin: -8px 0 -4px;
+  color: #ff6b7a;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
 }
 
 @media (max-width: 640px) {

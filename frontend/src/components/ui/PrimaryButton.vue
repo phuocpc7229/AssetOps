@@ -1,11 +1,25 @@
 <template>
   <button
     class="primary-button"
-    type="button"
+    :type="type"
+    :disabled="disabled"
   >
     <slot />
   </button>
 </template>
+
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    type?: 'button' | 'submit'
+    disabled?: boolean
+  }>(),
+  {
+    type: 'button',
+    disabled: false,
+  },
+)
+</script>
 
 <style scoped>
 .primary-button {
@@ -29,6 +43,12 @@
     border-color 160ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
+}
+
+.primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
 }
 
 .primary-button::before,

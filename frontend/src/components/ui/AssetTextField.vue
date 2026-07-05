@@ -6,11 +6,15 @@
         <slot name="icon" />
       </span>
       <input
+        :value="modelValue"
         :type="type"
         :name="name"
         :autocomplete="autocomplete"
         :placeholder="placeholder"
+        :disabled="disabled"
+        :aria-invalid="invalid"
         class="asset-text-field__input"
+        @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       />
       <button
         v-if="$slots.action"
@@ -29,6 +33,7 @@
 <script setup lang="ts">
 defineEmits<{
   'action-click': []
+  'update:modelValue': [value: string]
 }>()
 
 withDefaults(
@@ -36,14 +41,20 @@ withDefaults(
     label: string
     name: string
     placeholder: string
+    modelValue?: string
     type?: 'text' | 'password'
     autocomplete?: string
     actionLabel?: string
+    disabled?: boolean
+    invalid?: boolean
   }>(),
   {
+    modelValue: '',
     type: 'text',
     autocomplete: 'off',
     actionLabel: 'Field action',
+    disabled: false,
+    invalid: false,
   },
 )
 </script>
@@ -95,6 +106,11 @@ withDefaults(
   color: var(--assetops-text);
   background: transparent;
   font-size: 16px;
+}
+
+.asset-text-field__input:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .asset-text-field__input::placeholder {

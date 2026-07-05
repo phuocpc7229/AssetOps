@@ -1,0 +1,14 @@
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-assetops}
+      POSTGRES_USER: ${DB_USER:-assetops}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-assetops}
+    ports:
+      - "5432:5432"
+    volumes:
+      - assetops_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  assetops_postgres_data:

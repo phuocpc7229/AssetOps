@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 
 import AssetTable from '@/components/assets/AssetTable.vue'
@@ -238,10 +238,14 @@ const initialFilters = () => ({
   include_archived: route.query.include_archived === 'true',
 })
 
+const initialOrdering = () =>
+  readQueryString(route.query.ordering) ||
+  (readQueryString(route.query.warranty) === 'expiring' ? 'warranty_expires_on' : 'asset_tag')
+
 const draftFilters = reactive(initialFilters())
 const params = reactive<AssetListParams>({
   ...initialFilters(),
-  ordering: readQueryString(route.query.ordering) || 'asset_tag',
+  ordering: initialOrdering(),
   page: 1,
   page_size: 10,
 })
@@ -302,6 +306,16 @@ const loadAssets = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+const applyRouteQueryFilters = () => {
+  const filters = initialFilters()
+  Object.assign(draftFilters, filters)
+  Object.assign(params, filters, {
+    ordering: initialOrdering(),
+    page: 1,
+    page_size: params.page_size || 10,
+  })
 }
 
 const runPingTest = async (asset: Asset) => {
@@ -385,6 +399,14 @@ const confirmArchive = async () => {
 }
 
 onMounted(loadAssets)
+
+watch(
+  () => route.query,
+  () => {
+    applyRouteQueryFilters()
+    void loadAssets()
+  },
+)
 </script>
 
 <style scoped>

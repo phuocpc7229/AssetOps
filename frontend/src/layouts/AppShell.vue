@@ -4,16 +4,47 @@
 
     <section class="app-shell__workspace">
       <AppTopbar />
-      <RouterView />
+      <RouterView v-slot="{ Component, route }">
+        <Transition
+          :name="transitionName(route.name)"
+          mode="out-in"
+        >
+          <component
+            :is="Component"
+            :key="route.fullPath"
+          />
+        </Transition>
+      </RouterView>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
+import type { RouteRecordNameGeneric } from 'vue-router'
 import { RouterView } from 'vue-router'
 
 import AppSidebar from '@/components/app/AppSidebar.vue'
 import AppTopbar from '@/components/app/AppTopbar.vue'
+
+const transitionName = (routeName: RouteRecordNameGeneric | null | undefined) => {
+  if (routeName === 'dashboard') {
+    return 'route-dashboard'
+  }
+
+  if (routeName === 'assets') {
+    return 'route-assets'
+  }
+
+  if (routeName === 'sites' || routeName === 'master-data') {
+    return 'route-directory'
+  }
+
+  if (routeName === 'asset-new' || routeName === 'asset-edit') {
+    return 'route-form'
+  }
+
+  return 'route-dashboard'
+}
 </script>
 
 <style scoped>
@@ -40,6 +71,59 @@ import AppTopbar from '@/components/app/AppTopbar.vue'
   overflow-y: auto;
   border-left: 1px solid rgba(30, 155, 255, 0.34);
   background: linear-gradient(135deg, rgba(2, 7, 19, 0.84), rgba(5, 12, 26, 0.96));
+}
+
+.route-dashboard-enter-active,
+.route-dashboard-leave-active,
+.route-assets-enter-active,
+.route-assets-leave-active,
+.route-directory-enter-active,
+.route-directory-leave-active,
+.route-form-enter-active,
+.route-form-leave-active {
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.route-dashboard-enter-from,
+.route-dashboard-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.route-assets-enter-from {
+  opacity: 0;
+  transform: translateX(14px);
+}
+
+.route-assets-leave-to {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.route-directory-enter-from,
+.route-directory-leave-to {
+  opacity: 0;
+  transform: scale(0.992);
+}
+
+.route-form-enter-from,
+.route-form-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-dashboard-enter-active,
+  .route-dashboard-leave-active,
+  .route-assets-enter-active,
+  .route-assets-leave-active,
+  .route-directory-enter-active,
+  .route-directory-leave-active,
+  .route-form-enter-active,
+  .route-form-leave-active {
+    transition: none;
+  }
 }
 
 @media (max-width: 900px) {

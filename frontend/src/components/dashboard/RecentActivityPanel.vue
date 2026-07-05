@@ -16,18 +16,22 @@
       v-if="activities.length"
       class="recent-activity-panel__list"
     >
-      <RouterLink
+      <component
+        :is="resolveActivityRoute(activity) ? RouterLink : 'div'"
         v-for="activity in activities"
         :key="activity.id"
         class="recent-activity-panel__item"
-        :class="`recent-activity-panel__item--${activity.severity}`"
-        :to="activity.route"
+        :class="[
+          `recent-activity-panel__item--${activity.severity}`,
+          { 'recent-activity-panel__item--static': !resolveActivityRoute(activity) },
+        ]"
+        :to="resolveActivityRoute(activity) ?? undefined"
       >
         <span>{{ actionLabel(activity.action) }}</span>
         <strong>{{ activity.title }}</strong>
         <small>{{ activity.metadata }}</small>
         <time>{{ formatTime(activity.occurred_at) }}</time>
-      </RouterLink>
+      </component>
     </div>
     <div
       v-else
@@ -39,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, type RouteLocationRaw } from 'vue-router'
 
 import type { DashboardActivity } from '@/services/dashboard'
 
@@ -56,6 +60,33 @@ const actionLabel = (action: DashboardActivity['action']) => {
   }
 
   return labels[action]
+}
+
+const resolveActivityRoute = (activity: DashboardActivity): RouteLocationRaw | null => {
+  if (activity.entity_type === 'asset') {
+    const assetId = Number(activity.id.replace(/^asset-/, ''))
+    if (Number.isFinite(assetId)) {
+      return { name: 'asset-edit', params: { id: assetId } }
+    }
+
+    return null
+  }
+
+  if (activity.entity_type === 'site') {
+    return { name: 'sites' }
+  }
+
+  if (activity.entity_type === 'master_data') {
+    const knownKind = ['asset-types', 'vendors', 'device-types', 'locations'].find((kind) =>
+      activity.id.startsWith(`${kind}-`),
+    )
+
+    if (knownKind) {
+      return { name: 'master-data', params: { kind: knownKind } }
+    }
+  }
+
+  return null
 }
 
 const formatTime = (value: string) =>
@@ -138,6 +169,10 @@ const formatTime = (value: string) =>
   border-radius: 8px;
   background: rgba(7, 21, 40, 0.62);
   padding: 10px;
+}
+
+.recent-activity-panel__item--static {
+  cursor: default;
 }
 
 .recent-activity-panel__item span {

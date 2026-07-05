@@ -16,7 +16,10 @@
           <input
             v-model.trim="assetSearch"
             placeholder="Search assets, sites, vendors..."
+            :aria-invalid="Boolean(searchError)"
+            @input="searchError = null"
           >
+          <small v-if="searchError">{{ searchError }}</small>
         </label>
         <button type="submit">
           Search
@@ -96,6 +99,7 @@ const activityNote = ref('Recent activity is inferred from existing records unti
 const isLoading = ref(false)
 const error = ref<string | null>(null)
 const assetSearch = ref('')
+const searchError = ref<string | null>(null)
 
 const canLoadDashboard = computed(() => Boolean(authStore.accessToken))
 
@@ -127,9 +131,14 @@ const loadDashboard = async () => {
 
 const searchAssets = () => {
   const search = assetSearch.value.trim()
+  if (!search) {
+    searchError.value = 'Enter a search term to search assets.'
+    return
+  }
+
   router.push({
     name: 'assets',
-    query: search ? { search } : {},
+    query: { search },
   })
 }
 
@@ -216,6 +225,17 @@ onMounted(() => {
 .dashboard-page__search input:focus {
   border-color: var(--assetops-cyan);
   box-shadow: 0 0 16px rgba(0, 216, 255, 0.18);
+}
+
+.dashboard-page__search input[aria-invalid="true"] {
+  border-color: rgba(255, 77, 94, 0.72);
+  box-shadow: 0 0 14px rgba(255, 77, 94, 0.12);
+}
+
+.dashboard-page__search small {
+  color: #ffb9c0;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .dashboard-page__search button {

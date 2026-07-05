@@ -76,7 +76,7 @@
             <span>IP Address</span>
             <input
               v-model.trim="row.address"
-              placeholder="192.168.1.10"
+              placeholder="Enter IP address"
             >
             <small v-if="row.error">{{ row.error }}</small>
           </label>
@@ -682,7 +682,11 @@ const submit = () => {
 .asset-form__ip-section {
   display: grid;
   grid-column: 1 / -1;
-  gap: 12px;
+  gap: 14px;
+  border: 1px solid rgba(30, 155, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(7, 21, 40, 0.34);
+  padding: 16px;
 }
 
 .asset-form__ip-header,
@@ -694,23 +698,31 @@ const submit = () => {
 
 .asset-form__ip-header {
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
 }
 
 .asset-form__ip-row {
-  grid-template-columns: minmax(220px, 1fr) 126px 98px;
+  grid-template-columns: minmax(260px, 1fr) 132px 104px;
+  border-top: 1px solid rgba(142, 168, 203, 0.12);
+  padding-top: 12px;
+}
+
+.asset-form__ip-row input::placeholder {
+  color: rgba(154, 178, 212, 0.58);
 }
 
 .asset-form__ip-header button,
 .asset-form__primary-toggle,
 .asset-form__remove-ip {
-  min-height: 42px;
+  min-height: 45px;
   border: 1px solid rgba(30, 155, 255, 0.32);
   border-radius: 8px;
   color: var(--assetops-muted-strong);
   background: rgba(7, 21, 40, 0.72);
-  padding: 0 14px;
+  padding: 0 12px;
   cursor: pointer;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .asset-form__primary-toggle--active {

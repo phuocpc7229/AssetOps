@@ -87,7 +87,7 @@ const actions = computed<QuickAction[]>(() => [
     label: 'Warranty Risk',
     helper: 'Assets expiring soon',
     icon: 'W',
-    to: { name: 'assets', query: { ordering: 'warranty_expires_on' } },
+    to: { name: 'assets', query: { warranty: 'expiring' } },
     badge: props.badges.expiring_warranty,
   },
   {
